@@ -1,0 +1,47 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{code}} · JAC Nuevo Achí</title><link rel="stylesheet" href="/static/style.css"></head><body><header><b>JAC NUEVO ACHÍ · {{code}}</b><nav><a href="/dashboard">← Panel</a><a href="/descargar">Excel</a></nav></header><main><div class="head"><div><small>FICHA DEL HOGAR</small><h1>{{code}}</h1></div><span class="pill">{{vals['Estado de caracterización'] or 'Pendiente'}}</span></div>{% for cat,msg in get_flashed_messages(with_categories=true) %}<div class="alert {{cat}}">{{msg}}</div>{% endfor %}<form method="post" class="card grid">{% for h in headers %}<label>{{h}}{% if h=='Código hogar' %}<input value="{{vals[h] or ''}}" disabled>{% else %}<textarea name="f{{loop.index}}">{% if vals[h] is not none %}{{vals[h]}}{% endif %}</textarea>{% endif %}</label>{% endfor %}<button>Guardar actualización</button></form><section class="card">
+<h2>Integrantes del hogar</h2>
+<p class="section-help">Aquí puedes <b>editar</b> o <b>eliminar</b> cualquier integrante registrado para este hogar.</p>
+{% if members %}
+<div class="member-list">
+{% for m in members %}
+<form method="post" action="/hogar/{{code}}/integrante/{{m['_row']}}/editar" class="member-edit">
+<div class="member-title"><b>Integrante {{loop.index}}</b><span>Fila {{m['_row']}}</span></div>
+<div class="member-grid">
+<label>N.º integrante<input name="n" value="{{m['N.º integrante'] or ''}}"></label>
+<label>Nombre completo<input name="nombre" value="{{m['Nombre completo'] or ''}}" required></label>
+<label>Tipo documento<input name="tipo" value="{{m['Tipo de documento'] or ''}}"></label>
+<label>Número documento<input name="doc" value="{{m['Número de documento'] or ''}}"></label>
+<label>Parentesco<input name="parentesco" value="{{m['Parentesco con el jefe del hogar'] or ''}}"></label>
+<label>Edad<input name="edad" value="{{m['Edad (años)'] or ''}}"></label>
+<label>Sexo<input name="sexo" value="{{m['Sexo'] or ''}}"></label>
+<label>Situación laboral<input name="laboral" value="{{m['Situación laboral'] or ''}}"></label>
+<label>Ingreso mensual<input name="ingreso" value="{{m['Ingreso mensual aproximado ($)'] or ''}}"></label>
+<label class="wide">Observaciones<textarea name="obs">{{m['Observaciones'] or ''}}</textarea></label>
+</div>
+<div class="member-actions">
+<button type="submit">Guardar cambios</button>
+</div>
+</form>
+<form method="post" action="/hogar/{{code}}/integrante/{{m['_row']}}/eliminar" onsubmit="return confirm('¿Eliminar este integrante? Esta acción no se puede deshacer.')" class="delete-form">
+<button type="submit" class="danger">Eliminar integrante</button>
+</form>
+{% endfor %}
+</div>
+{% else %}
+<p class="empty">No hay integrantes registrados para este hogar.</p>
+{% endif %}
+<h3>Agregar nuevo integrante</h3>
+<form method="post" action="/hogar/{{code}}/integrante" class="members">
+<input name="n" placeholder="N.º">
+<input name="nombre" placeholder="Nombre completo" required>
+<input name="tipo" placeholder="Tipo documento">
+<input name="doc" placeholder="Documento">
+<input name="parentesco" placeholder="Parentesco">
+<input name="edad" placeholder="Edad">
+<input name="sexo" placeholder="Sexo">
+<input name="laboral" placeholder="Situación laboral">
+<input name="ingreso" placeholder="Ingreso aprox.">
+<input name="obs" placeholder="Observaciones">
+<button>Agregar integrante</button>
+</form>
+</section></section><section class="card"><h2>Control documental</h2><form method="post" action="/hogar/{{code}}/control" class="grid">{% set c=control or {} %}<label>Jefe del hogar<input name="jefe" value="{{c.get('Jefe del hogar','')}}"></label><label>Encuesta<input name="encuesta" value="{{c.get('Encuesta','')}}"></label><label>Visita domiciliaria<input name="visita" value="{{c.get('Visita domiciliaria','')}}"></label><label>Documentos<input name="documentos" value="{{c.get('Documentos','')}}"></label><label>Predio<input name="predio" value="{{c.get('Predio','')}}"></label><label>Fotografías<input name="fotos" value="{{c.get('Fotografías','')}}"></label><label>Validación comunitaria<input name="validacion" value="{{c.get('Validación comunitaria','')}}"></label><label>Observaciones<textarea name="observaciones">{{c.get('Observaciones','')}}</textarea></label><button>Guardar control</button></form></section></main></body></html>
